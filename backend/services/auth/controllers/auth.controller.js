@@ -6,9 +6,10 @@ import { app } from "../config/firebase.js";
 import User from "../models/user.model.js";
 import redis from "../../../shared/redis/redis.js";
 
-// Production: the frontend (Vercel) and API (Render) are different sites,
-// so the session cookie must be SameSite=None, which browsers only accept
-// with Secure. Local dev over http stays Strict. COOKIE_SAMESITE overrides.
+// Production defaults to SameSite=None + Secure, which a frontend on another
+// site needs when it calls the API directly. render.yaml sets
+// COOKIE_SAMESITE=lax because the frontend proxies /api through its own
+// domain (vercel.json), making the cookie first-party. Local dev: Strict.
 const isProduction = process.env.NODE_ENV === "production";
 const sameSite =
     process.env.COOKIE_SAMESITE ||

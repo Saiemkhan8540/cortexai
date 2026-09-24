@@ -21,6 +21,11 @@ services:
         generateValue: true
       - key: NODE_ENV
         value: production
+      # The frontend reaches the API through Vercel's /api rewrite, so the
+      # session cookie is first-party: Lax works everywhere (incl. Safari and
+      # Firefox) and blocks cross-site form POSTs (CSRF).
+      - key: COOKIE_SAMESITE
+        value: lax
 
       # Set these in the Render dashboard (prompted on first deploy).
       # Their meaning is documented in backend/.env.example.

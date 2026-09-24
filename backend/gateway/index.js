@@ -18,7 +18,9 @@ const allowedOrigins = (process.env.FRONTEND_URL || "")
     .filter(Boolean)
 
 if (!allowedOrigins.length) {
-    console.warn("FRONTEND_URL is not set: all browser requests will fail CORS")
+    // Fine behind the Vercel /api rewrite (same-origin); only direct
+    // cross-origin calls need an allowed origin.
+    console.warn("FRONTEND_URL is not set: cross-origin browser requests will be blocked")
 }
 
 const app = express()

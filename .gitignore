@@ -11,3 +11,7 @@ serviceAccountKey.json
 
 # runtime uploads
 backend/services/agent/temp/
+
+# dashboard paste files with real values (Render / Vercel)
+render.env
+vercel.env
