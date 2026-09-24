@@ -10,9 +10,22 @@ import morgan from "morgan"
 
 const port = process.env.PORT
 
+// Comma-separated, e.g. "https://cortexai.vercel.app,http://localhost:5173".
+// Origins not listed get no CORS headers, so browsers block them.
+const allowedOrigins = (process.env.FRONTEND_URL || "")
+    .split(",")
+    .map((origin) => origin.trim().replace(/\/$/, ""))
+    .filter(Boolean)
+
+if (!allowedOrigins.length) {
+    console.warn("FRONTEND_URL is not set: all browser requests will fail CORS")
+}
+
 const app = express()
+// Render terminates TLS in front of us.
+app.set("trust proxy", 1)
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: allowedOrigins,
     credentials: true
 }))
 

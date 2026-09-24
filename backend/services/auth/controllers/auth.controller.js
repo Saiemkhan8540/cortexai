@@ -6,12 +6,18 @@ import { app } from "../config/firebase.js";
 import User from "../models/user.model.js";
 import redis from "../../../shared/redis/redis.js";
 
-// secure cookies in production; set COOKIE_SAMESITE=none when the
-// frontend and API live on different sites.
+// Production: the frontend (Vercel) and API (Render) are different sites,
+// so the session cookie must be SameSite=None, which browsers only accept
+// with Secure. Local dev over http stays Strict. COOKIE_SAMESITE overrides.
+const isProduction = process.env.NODE_ENV === "production";
+const sameSite =
+    process.env.COOKIE_SAMESITE ||
+    (isProduction ? "none" : "strict");
+
 const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.COOKIE_SAMESITE || "strict",
+    secure: isProduction || sameSite === "none",
+    sameSite,
 };
 
 // ==========================================

@@ -8,7 +8,8 @@ services:
     plan: free
     rootDir: backend
     buildCommand: npm run install:all
-    startCommand: npm start
+    # node directly (not `npm start`) so no idle npm parent eats ~40 MB
+    startCommand: node --max-old-space-size=32 start-all.js
     healthCheckPath: /
     envVars:
       - key: REDIS_URL
@@ -18,9 +19,13 @@ services:
           property: connectionString
       - key: INTERNAL_API_KEY
         generateValue: true
+      - key: NODE_ENV
+        value: production
 
       # Set these in the Render dashboard (prompted on first deploy).
       # Their meaning is documented in backend/.env.example.
+      - key: FRONTEND_URL
+        sync: false
       - key: MONGODB_URI
         sync: false
       - key: FIREBASE_SERVICE_ACCOUNT

@@ -15,11 +15,23 @@ const root = path.dirname(fileURLToPath(import.meta.url))
 const INTERNAL_HOST = "127.0.0.1"
 
 const services = [
-    { name: "auth", dir: "services/auth", port: Number(process.env.AUTH_PORT) || 8001 },
-    { name: "chat", dir: "services/chat", port: Number(process.env.CHAT_PORT) || 8002 },
-    { name: "agent", dir: "services/agent", port: Number(process.env.AGENT_PORT) || 8003 },
-    { name: "billing", dir: "services/billing", port: Number(process.env.BILLING_PORT) || 8004 },
+    { name: "auth", dir: "services/auth", port: Number(process.env.AUTH_PORT) || 8001, heapMb: 64 },
+    { name: "chat", dir: "services/chat", port: Number(process.env.CHAT_PORT) || 8002, heapMb: 48 },
+    { name: "agent", dir: "services/agent", port: Number(process.env.AGENT_PORT) || 8003, heapMb: 160 },
+    { name: "billing", dir: "services/billing", port: Number(process.env.BILLING_PORT) || 8004, heapMb: 48 },
 ]
+const gateway = { name: "gateway", dir: "gateway", heapMb: 48 }
+
+// Keeps six Node processes inside a 512 MB instance: each child gets a V8
+// heap cap (override with NODE_HEAP_MB_<NAME>) and a small young generation,
+// so GC runs before a process balloons. Other NODE_OPTIONS flags pass through.
+const nodeOptionsFor = ({ name, heapMb }) => {
+    const heap = Number(process.env[`NODE_HEAP_MB_${name.toUpperCase()}`]) || heapMb
+    const inherited = (process.env.NODE_OPTIONS || "")
+        .split(/\s+/)
+        .filter((flag) => flag && !/^--max-(old|semi)-space-size/.test(flag))
+    return [...inherited, `--max-old-space-size=${heap}`, "--max-semi-space-size=4"].join(" ")
+}
 
 const serviceUrls = Object.fromEntries(
     services.map((s) => [`${s.name.toUpperCase()}_SERVICE`, `http://${INTERNAL_HOST}:${s.port}`])
@@ -106,11 +118,13 @@ for (const s of services) {
         PORT: String(s.port),
         HOST: INTERNAL_HOST,
         MONGODB_URI: mongoUriFor(s.name),
+        NODE_OPTIONS: nodeOptionsFor(s),
     })
 }
 
-start("gateway", "gateway", {
+start(gateway.name, gateway.dir, {
     PORT: process.env.PORT || "8000",
+    NODE_OPTIONS: nodeOptionsFor(gateway),
 })
 
 console.log(

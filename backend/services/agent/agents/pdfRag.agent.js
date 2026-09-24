@@ -28,16 +28,17 @@ export const pdfRag = async (state) => {
             }
         }
 
+        // Larger chunks cover more of the PDF per embedding (quota-bound).
         const splitter = new RecursiveCharacterTextSplitter({
-            chunkSize: 1000,
+            chunkSize: 2000,
             chunkOverlap: 200
         })
 
         const docs = await splitter.createDocuments([text])
 
-        const relevantDocs = await topChunks(docs, state.prompt, 5)
+        const search = await topChunks(docs, state.prompt, 5)
 
-        const context = relevantDocs.map(d => d.pageContent).join("\n\n")
+        const context = search.docs.map(d => d.pageContent).join("\n\n")
 
         const llm = await getModel("pdf-rag")
 
@@ -60,9 +61,13 @@ ${state.prompt}`)
 
         const response = await llm.invoke(messages)
 
+        const note = search.truncated
+            ? `\n\n> ⚠️ This PDF is large: only the first ${Math.round(100 * search.searchedChunks / search.totalChunks)}% of it was searched.`
+            : ""
+
         return {
             ...state,
-            aiResponse: response.content
+            aiResponse: response.content + note
         }
 
     } catch (error) {

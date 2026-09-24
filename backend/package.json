@@ -10,8 +10,8 @@
     "node": "22.x"
   },
   "scripts": {
-    "install:all": "npm ci && npm ci --prefix gateway && npm ci --prefix services/auth && npm ci --prefix services/chat && npm ci --prefix services/agent && npm ci --prefix services/billing",
-    "start": "node start-all.js"
+    "install:all": "npm ci --omit=dev && npm ci --omit=dev --prefix gateway && npm ci --omit=dev --prefix services/auth && npm ci --omit=dev --prefix services/chat && npm ci --omit=dev --prefix services/agent && npm ci --omit=dev --prefix services/billing",
+    "start": "node --max-old-space-size=32 start-all.js"
   },
   "dependencies": {
     "ioredis": "^5.11.1"

@@ -10,4 +10,8 @@ export default defineConfig({
       "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
     },
   },
+  build: {
+    // don't ship source to production
+    sourcemap: false,
+  },
 })

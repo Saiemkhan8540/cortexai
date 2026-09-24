@@ -1,7 +1,6 @@
 import "dotenv/config";
 
 import express from "express";
-import connectDb from "./config/db.js";
 import router from "./routes/agent.route.js";
 
 const port = process.env.PORT || 8003;
@@ -37,5 +36,4 @@ app.use((err,req,res,next)=>{
 // HOST=127.0.0.1 when run behind the gateway (see start-all.js)
 app.listen(port, process.env.HOST, () => {
   console.log(`agent started at ${port}`);
-  connectDb();
 });
