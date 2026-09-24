@@ -13,7 +13,8 @@ app.get("/", (req, res) => {
     res.json({message: "hello from chat"})
 })
 
-app.listen(port, () => {
+// HOST=127.0.0.1 when run behind the gateway (see start-all.js)
+app.listen(port, process.env.HOST, () => {
     console.log(`chat started at ${port}`)
     connectDb()
 })

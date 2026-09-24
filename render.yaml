@@ -1,0 +1,55 @@
+# Render Blueprint: the whole backend (gateway + auth, chat, agent, billing)
+# as one free web service, plus a free Key Value instance for sessions.
+# See backend/start-all.js for how the processes are laid out.
+services:
+  - name: cortexai-api
+    type: web
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm run install:all
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: cortexai-sessions
+          property: connectionString
+      - key: INTERNAL_API_KEY
+        generateValue: true
+
+      # Set these in the Render dashboard (prompted on first deploy).
+      # Their meaning is documented in backend/.env.example.
+      - key: MONGODB_URI
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_BUCKET_NAME
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+
+  - name: cortexai-sessions
+    type: keyvalue
+    plan: free
+    # empty list = reachable only from Render services in the same region
+    ipAllowList: []

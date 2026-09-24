@@ -5,9 +5,13 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "index.js",
+  "main": "start-all.js",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
-    "dev": "nodemon index.js"
+    "install:all": "npm ci && npm ci --prefix gateway && npm ci --prefix services/auth && npm ci --prefix services/chat && npm ci --prefix services/agent && npm ci --prefix services/billing",
+    "start": "node start-all.js"
   },
   "dependencies": {
     "ioredis": "^5.11.1"

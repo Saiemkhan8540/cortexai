@@ -35,8 +35,10 @@ app.get(
     }
 );
 
+// HOST=127.0.0.1 when run behind the gateway (see start-all.js)
 app.listen(
     port,
+    process.env.HOST,
     () => {
         console.log(
             `auth started at ${port}`

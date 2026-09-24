@@ -34,7 +34,8 @@ app.use((err,req,res,next)=>{
   )
 })
 
-app.listen(port, () => {
+// HOST=127.0.0.1 when run behind the gateway (see start-all.js)
+app.listen(port, process.env.HOST, () => {
   console.log(`agent started at ${port}`);
   connectDb();
 });
