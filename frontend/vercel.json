@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://cortexai-api.onrender.com/api/:path*"
+      "destination": "https://cortexai-api-wrof.onrender.com/api/:path*"
     }
   ],
   "headers": [
