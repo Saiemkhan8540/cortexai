@@ -5,6 +5,9 @@ const userSlice = createSlice({
 
     initialState: {
         userData: null,
+        // true until the first /api/me check finishes, so the login modal
+        // doesn't flash (or reappear) while the session is still being verified
+        authLoading: true,
     },
 
     reducers: {
@@ -14,6 +17,7 @@ const userSlice = createSlice({
         ) => {
             state.userData =
                 action.payload;
+            state.authLoading = false;
         },
         // agent responses carry the post-charge balance
         setCredits: (state, action) => {

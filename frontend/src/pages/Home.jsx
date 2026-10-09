@@ -9,7 +9,8 @@ import Sidebar from "../components/SideBar";
 import ChatArea from "../components/ChatArea";
 
 function Home() {
-  const { userData } = useSelector((state) => state.user);
+  const { userData, authLoading } = useSelector((state) => state.user);
+  const [loginError, setLoginError] = React.useState("");
 
   const dispatch = useDispatch();
 
@@ -22,6 +23,10 @@ function Home() {
       dispatch(setUserdata(data));
     } catch (error) {
       console.log(error);
+      setLoginError(
+        error.response?.data?.message ||
+          "Login failed. Please try again."
+      );
     }
   };
 
@@ -32,13 +37,11 @@ function Home() {
         googleProvider
       );
 
+      setLoginError("");
       const token = await data.user.getIdToken();
-
-      console.log(token);
 
       await handleLogin(token);
 
-      console.log(data);
     } catch (error) {
       console.log("Google Login Error:", error);
     }
@@ -54,7 +57,7 @@ function Home() {
       <ChatArea />
 
       {/* Login Modal */}
-      {!userData && (
+      {!userData && !authLoading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur">
 
           <div className="w-[340px] bg-[#13151c] border border-white/[0.08] rounded-2xl p-7 flex flex-col gap-5">
@@ -79,6 +82,10 @@ function Home() {
               <FcGoogle size={15} />
               Continue with Google
             </button>
+
+            {loginError && (
+              <p className="text-[12px] text-red-400">{loginError}</p>
+            )}
 
           </div>
 
